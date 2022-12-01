@@ -1,2 +1,7 @@
 venv/
 __pycache__/
+Scripts/
+Include/
+Lib/
+pyvenv.cfg
+.vscode/
