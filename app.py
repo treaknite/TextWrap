@@ -75,9 +75,13 @@ def summariser():
         # getting input with name = fname in HTML form
         initial_corpus = request.form.get("initial-corpus")
         # text = summaryGenerator(initial_corpus)
-        return "A summary of the text is: " + initial_corpus
+        return """
+        <h1>Welcome</h1>
+        <label>Summary</label>
+        <Textarea>{initial_corpus}</Textarea>
+        <button><a href="./summariser">Go Back</a></button>
+        """.format(initial_corpus=initial_corpus)
     return render_template('webApp.html')
-
 
     # For local system & cloud
 if __name__ == "__main__":
