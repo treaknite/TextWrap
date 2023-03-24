@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summarise any text</title>
+    <title>Summarise Your Text</title>
 
     <style>
         * {
@@ -87,6 +87,10 @@
 
     </style>
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0-beta2/css/bootstrap.min.css" integrity="sha512-8pi6WlRykaeU6rAOU6h8Hu3qQ2ZwNi0Zblhml+pE9Ex3Y2y5QzL1S5b5aj8nyiGn74vR4bo4C4AC4MceXnWfug==" crossorigin="anonymous" />
+
+
 </head>
 
 <body>
@@ -94,13 +98,58 @@
      <header class="header">
         <h1>Text Wrap</h1>
     </header>
+      
 
+    <!-- Form -->
     <form action="{{url_for('summariser')}}" method="post">
-        <label for="initial-corpus"></label>
-        <Textarea type="text" id="initial-corpus" class="txt-input" name="initial-corpus" placeholder="enter you text"></Textarea>
-         <!-- summarize button  -->
-         <button class="button" type="submit">WRAP ✨</button>
-    </form>     
+        <!-- Algorithm selection -->
+        <label for="algorithmType">Select a Algorithm Type:</label>
+        <select id="algorithmType" name="algorithmType" onchange="updateAlgorithms()">
+            <option value="">--Select--</option>
+            <option value="extractive">Extractive</option>
+            <option value="abstractive">Abstractive</option>
+            <option value="ourOwn">Our Own</option>
+        </select>
+        <label for="algorithm">Select Algorithm:</label>
+        <select id="algorithm" name="algorithm">
+            <option value="">--Select--</option>
+        </select>
+
+        <!-- Text Area Input for text to be summarized -->
+        <!-- <label for="initial-corpus">Enter Text</label> -->
+        <Textarea type="text" id="initial-corpus" class="txt-input" name="initial-corpus" placeholder="Enter you text here..."></Textarea>
+         <!-- summarize submit button  -->
+         <button class="button" type="submit">Summarize ✨</button>
+    </form>  
+    
+
+    <script>
+        function updateAlgorithms() {
+            var algorithmTypeSelect = document.getElementById('algorithmType');
+            var algorithmSelect = document.getElementById('algorithm');
+            var algorithms = {};
+            algorithms['extractive'] = ['Text Rank', 'Lex Rank', 'Sum Basic', 'Frequency Method', 'Gensim'];
+            algorithms['abstractive'] = ['Bart Large Cnn'];
+            algorithms['ourOwn'] = ['Text Wrap'];
+
+            var algorithmCategory = algorithmTypeSelect.value;
+            algorithmSelect.innerHTML = '';
+
+            if (algorithmCategory != '') {
+                for (var i = 0; i < algorithms[algorithmCategory].length; i++) {
+                var option = document.createElement('option');
+                option.value = algorithms[algorithmCategory][i];
+                option.text = algorithms[algorithmCategory][i];
+                algorithmSelect.appendChild(option);
+                }
+            }
+        }
+
+    </script>
+    
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0-beta2/js/bootstrap.min.js" integrity="sha512-YCUBjmDmRmdEBhO2w4cqXL3qy4O4Ib6T+QwsTzkD3q3dKTtrJW6OFbU6knsUpzazsU6M7U6cXHl78orQLZgdfA==" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

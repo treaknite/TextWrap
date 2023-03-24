@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Report</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0-beta2/css/bootstrap.min.css" integrity="sha512-8pi6WlRykaeU6rAOU6h8Hu3qQ2ZwNi0Zblhml+pE9Ex3Y2y5QzL1S5b5aj8nyiGn74vR4bo4C4AC4MceXnWfug==" crossorigin="anonymous" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Summary Report</h1>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Original Text</h5>
+                        <p class="card-text">{{ original_text }}</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Summary</h5>
+                        <p class="card-text">{{ summary }}</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Keywords</h5>
+                        <p class="card-text">{{ keywords }}</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Algorithm Report</h5>
+                        <canvas id="chart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.0-beta2/js/bootstrap.min.js" integrity="sha512-YCUBjmDmRmdEBhO2w4cqXL3qy4O4Ib6T+QwsTzkD3q3dKTtrJW6OFbU6knsUpzazsU6M7U6cXHl78orQLZgdfA==" crossorigin="anonymous"></script>
+
+    <!-- Script to generate bar chart -->
+    <script>
+        var ctx = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Algorithm 1', 'Algorithm 2', 'Algorithm 3'],
+                datasets: [{
+                    label: 'Algorithm Report',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'],
+                    borderWidth: 1,
+                    data: [{{ algorithm1_score }}, {{ algorithm2_score }}, {{ algorithm3_score }}]}]},
+                    options: {
+                    scales: {
+                    yAxes: [{
+                    ticks: {
+                    beginAtZero: true
+                    }}]}}});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
