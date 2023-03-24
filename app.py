@@ -3,86 +3,82 @@ from flask import Flask, render_template, request
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
+import gensim
+from gensim.summarization.summarizer import summarize
+import matplotlib.pyplot as plt
+import io
+import base64
 
-# method to generate summary of passed text using nltk library
-
-
-def summaryGenerator(text):
-
-    # Tokenizing the text
-    stopWords = set(stopwords.words("english"))
-    words = word_tokenize(text)
-
-    # Creating a frequency table to keep the score of each word
-
-    freqTable = dict()
-    for word in words:
-        word = word.lower()
-        if word in stopWords:
-            continue
-        if word in freqTable:
-            freqTable[word] += 1
-        else:
-            freqTable[word] = 1
-
-    # Creating a dictionary to keep the score of each sentence
-    sentences = sent_tokenize(text)
-    sentenceValue = dict()
-
-    for sentence in sentences:
-        for word, freq in freqTable.items():
-            if word in sentence.lower():
-                if sentence in sentenceValue:
-                    sentenceValue[sentence] += freq
-                else:
-                    sentenceValue[sentence] = freq
-
-    sumValues = 0
-    for sentence in sentenceValue:
-        sumValues += sentenceValue[sentence]
-
-    # Average value of a sentence from the original text
-    average = int(sumValues / len(sentenceValue))
-
-    # Storing sentences into our summary.
-    summary = ''
-    for sentence in sentences:
-        if (sentence in sentenceValue) and (sentenceValue[sentence] > (1.2 * average)):
-            summary += " " + sentence
-
-    print(summary)
-    return summary
+# Import algorithms
+from ./algorithms.abstractive import *
+from ./algorithms.extractive import *
+from ./algorithms.textWrapAlgorithm import * 
 
 
 # Create flask instance
 app = Flask(__name__)
 
 # render index.html page
-
-
-@app.route('/', methods=["GET", "POST"])
+@app.route('/', methods=["GET"])
 def home():
-    if request.method == "GET":
-        return render_template("index.html")
+    return render_template("index.html")
 
 
-# get input text from client then summarise and render respective .html page for solution
-
-
+# get input text from client then summarise text and generate summary and summary
 @app.route("/summariser", methods=['GET', 'POST'])
 def summariser():
-    if request.method == "POST":
-        # getting input with name = fname in HTML form
-        initial_corpus = request.form.get("initial-corpus")
-        # text = summaryGenerator(initial_corpus)
-        return """
-        <h1>Welcome</h1>
-        <label>Summary</label>
-        <Textarea>{initial_corpus}</Textarea>
-        <button><a href="./summariser">Go Back</a></button>
-        """.format(initial_corpus=initial_corpus)
-    return render_template('webApp.html')
+    if request.method == "GET":
+        return render_template('webApp.html')
 
-    # For local system & cloud
+    if request.method == "POST":
+        # Get user input from html form
+        text = request.form['initial-corpus']
+        algorithm = request.form['algorithm']
+
+        # Summarize text based on selected algorithm
+        # Using TextWrap Algorithm
+        if algorithm == 'textWrap':
+            summary = runner(text)
+
+        # For extractive based approach algorithm
+        if algorithm == 'gensim':
+            summary = summarize(text, ratio=0.2)
+        elif algorithm == 'textrank':
+            summary = extract_top_sentences(text, num_sentences=3)
+        elif algorithm == 'lexrank':
+            summary = lexrank_summarize(text, n=3)
+        elif algorithm == 'sumbasic':
+            summary = sumbasic_summarize(text, length=3)
+        elif algorithm == 'frequencyMethod':
+            summary = summaryGenerator(text)
+        
+
+        # For abstractive based approach
+        if algorithm == 'bartLargeCnn':
+            summary = bartLargeCnn(text)
+        elif algorithm == '':
+            pass
+        elif algorithm == '':
+            pass
+            
+
+        # Generate summary report
+        word_counts = len(text.split())
+        summary_counts = len(summary.split())
+        summary_ratio = summary_counts / word_counts
+        fig = plt.figure()
+        plt.bar(['Original Text', 'Summary'], [word_counts, summary_counts])
+        plt.title('Word Counts')
+        plt.xlabel('Text')
+        plt.ylabel('Word Count')
+        img = io.BytesIO()
+        fig.savefig(img, format='png')
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        # Render summary template with summary and summary report
+        return render_template('summary.html', summary=summary, plot_url=plot_url)
+
+
 if __name__ == "__main__":
     app.run(threaded=False)
